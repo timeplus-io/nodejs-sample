@@ -49,7 +49,7 @@ async function runQuery() {
 // A sample function to demotrate how to create a stream
 async function createStream() {
   console.log('creating stream...')
-  const url = Env().BuildUrl('v1beta1', 'streams');
+  const url = Env().BuildUrl('v1beta2', 'streams');
 
   const createStreamBody = {
     name: 'test_stream',
@@ -97,7 +97,7 @@ async function createStream() {
 // A sample function to demotrate how to ingest some sample events to the stream
 async function ingestEvents() {
   console.log('ingesting sample events...')
-  const url = [Env().BuildUrl('v1beta1', 'streams'), 'test_stream', 'ingest'].join('/');
+  const url = [Env().BuildUrl('v1beta2', 'streams'), 'test_stream', 'ingest'].join('/');
 
   const ingestBody = {
     columns: [
