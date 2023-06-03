@@ -36,13 +36,13 @@ in the demo code, it shows how to create a stream, and then ingest some data and
 
 ### create stream
 
-refer to https://docs.timeplus.com/rest.html#tag/Streams-v1beta1/paths/~1v1beta1~1streams/post
+refer to https://docs.timeplus.com/rest.html#tag/Streams-v1beta2/paths/~1v1beta2~1streams/post
 
 please note, in the sample, a key-version streaming is created, in case you want to create an append-only stream, remove those two fields `mode` and `primary_key` from the `createStreamBody`
 
 ### ingest
 
-refer to https://docs.timeplus.com/rest.html#tag/Streams-v1beta1/paths/~1v1beta1~1streams~1%7Bname%7D~1ingest/post
+refer to https://docs.timeplus.com/rest.html#tag/Streams-v1beta2/paths/~1v1beta2~1streams~1%7Bname%7D~1ingest/post
 
 ### query
 

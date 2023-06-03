@@ -146,13 +146,6 @@ export interface CreateDashboardRequest {
   panels?: DashboardPanel[];
 }
 
-export interface CreateQueryRequestV1Beta1 {
-  description?: string;
-  name?: string;
-  sql?: string;
-  tags?: string[];
-}
-
 export interface CreateQueryRequestV1Beta2 {
   /** Controls how often a batch of results will be flushed via SSE channel */
   batching_policy?: BatchingPolicy;
