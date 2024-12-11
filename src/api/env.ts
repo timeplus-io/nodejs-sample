@@ -1,7 +1,10 @@
-const DEFAULT_ENV = {
+const DEFAULT_ENV: Env = {
   host: 'http://localhost',
   tenant: null,
   apiKey: null,
+  username: null,
+  password: null,
+  target: 'onprem'
 }
 
 let currentEnv: Env = DEFAULT_ENV;
@@ -19,14 +22,29 @@ export interface Env {
   port?: number;
 
   /**
-   * Tenant ID (not tenant name)
+   * Tenant ID (for cloud only)
    */
   tenant: string | null | undefined;
 
   /**
-   * Api key
+   * Api key (for cloud only)
    */
   apiKey: string | null | undefined;
+
+  /**
+   * Username (for onprem only)
+   */
+  username: string | null | undefined;
+
+  /**
+   * Password (for onprem only)
+   */
+  password: string | null | undefined;
+
+  /**
+   * Whether it is Timeplus Enterprise Cloud or Timeplus Enterprise (self-hosted)
+   */
+  target: 'onprem' | 'cloud';
 }
 
 export const SetEnv = (env: Env) => {
@@ -47,8 +65,19 @@ export const Env = () => {
       paths.push('api', apiVersion, resourceName)
       return paths.join('/');
     },
-    AuthKey(): string | null | undefined {
-      return currentEnv.apiKey;
+    AuthHeader(): object {
+      if (currentEnv.target === 'cloud' && currentEnv.apiKey) {
+        return {
+          'X-Api-Key': currentEnv.apiKey
+        }
+      }
+      if (currentEnv.target === 'onprem' && currentEnv.username) {
+        const token = `${currentEnv.username}:${currentEnv.password}`
+        return {
+          'Authorization': `Basic ${btoa(token)}`
+        }
+      }
+      return { }
     }
   }
 }

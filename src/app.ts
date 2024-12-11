@@ -1,15 +1,15 @@
 import { Env, Query, QueryBuilder, SetEnv } from './api';
 
-// Configure the Timeplus environment you'd like to use
-// SetEnv({ host: 'http://localhost', port: 8000, tenant: null, apiKey: null })
-
 const worksapceEnv = process.env.TIMEPLUS_WORKSPACE;
 const apiKeyEnv = process.env.TIMEPLUS_APIKEY;
-const hostEnv = process.env.TIMEPLUS_ADDRESS; //https://us.timeplus.cloud/
+const hostEnv = process.env.TIMEPLUS_ADDRESS; 
+const usernameEnv = process.env.TIMEPLUS_USERNAME;
+const passwordEnv = process.env.TIMEPLUS_PASSWORD;
+const isCloudEnv = process.env.TIMEPLUS_ISCLOUD == 'true'
 
-console.log("workspace is " + worksapceEnv);
+console.log(`connecting env ${hostEnv}`);
 
-SetEnv({ host: hostEnv, tenant: worksapceEnv, apiKey: apiKeyEnv })
+SetEnv({ host: hostEnv, tenant: worksapceEnv, apiKey: apiKeyEnv, username: usernameEnv, password: passwordEnv, target: isCloudEnv ? 'cloud' : 'onprem' })
 
 
 // A sample function to demostrate how to run a query and get its result. 
@@ -76,9 +76,7 @@ async function createStream() {
   // @ts-ignore
   await fetch(url, {
     method: 'POST',
-    headers: {
-      'X-Api-Key': Env().AuthKey()
-    },
+    headers: Env().AuthHeader(),
     body: JSON.stringify(createStreamBody)
   })
     // @ts-ignore
@@ -116,10 +114,9 @@ async function ingestEvents() {
   // @ts-ignore
   await fetch(url, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': Env().AuthKey()
-    },
+    headers: Object.assign({}, {
+        'Content-Type': 'application/json;charset=UTF-8',
+      }, Env().AuthHeader()),
     body: JSON.stringify(ingestBody)
   })
     // @ts-ignore

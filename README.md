@@ -14,12 +14,19 @@ npm install
 
 ## Config
 
-to run the demo code, three environment is required
+to run the demo code, you can use env variable to point to a Timeplus environment (either cloud or self-hosted)
 
 ```
+# For Timeplus Enterprise Cloud
+export TIMEPLUS_ISCLOUD=true
 export TIMEPLUS_WORKSPACE=<your workspace name>
 export TIMEPLUS_APIKEY=<your api key>
-export TIMEPLUS_ADDRESS=https://us.timeplus.cloud
+export TIMEPLUS_ADDRESS=https://us-west-2.timeplus.cloud
+
+# For Timeplus Enterprise (self-hosted)
+export TIMEPLUS_USERNAME=proton
+export TIMEPLUS_PASSWORD=proton@t+
+export TIMEPLUS_ADDRESS=http://localhost:8000
 ```
 
 you can create the api key in your timeplus console UI from personal settings.

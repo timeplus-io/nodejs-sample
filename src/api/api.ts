@@ -7,15 +7,14 @@ export const createQueryV1beta2 = async (queryRequest: CreateQueryRequestV1Beta2
   try {
     await fetchEventSource(Env().BuildUrl('v1beta2', 'queries'), {
       method: 'POST',
-      headers: {
+      headers: Object.assign({}, {
         // DO NOT set `Accept` header here since `fetchEventSource` will automatically set it to be `text/event-stream`
         // Duplicated the `Accept` will cause some proxy fail (namely CYPRESS!!!)
         // Accept: 'text/event-stream',
         'Content-Type': 'application/json;charset=UTF-8',
         'Cache-Control': 'no-cache',
-        'X-Api-Key': Env().AuthKey(),
         Pragma: 'no-cache',
-      },
+      }, Env().AuthHeader()),
       body: JSON.stringify(queryRequest),
       async onopen(response) {
         if (response.ok && response.headers.get('content-type') === 'text/event-stream') {
