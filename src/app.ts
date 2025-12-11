@@ -1,21 +1,17 @@
 import { Env, Query, QueryBuilder, SetEnv } from './api';
 
-const worksapceEnv = process.env.TIMEPLUS_WORKSPACE;
-const apiKeyEnv = process.env.TIMEPLUS_APIKEY;
-const hostEnv = process.env.TIMEPLUS_ADDRESS; 
+const hostEnv = process.env.TIMEPLUS_ADDRESS;
 const usernameEnv = process.env.TIMEPLUS_USERNAME;
 const passwordEnv = process.env.TIMEPLUS_PASSWORD;
-const isCloudEnv = process.env.TIMEPLUS_ISCLOUD == 'true'
 
 console.log(`connecting env ${hostEnv}`);
 
-SetEnv({ host: hostEnv, tenant: worksapceEnv, apiKey: apiKeyEnv, username: usernameEnv, password: passwordEnv, target: isCloudEnv ? 'cloud' : 'onprem' })
+SetEnv({ host: hostEnv, username: usernameEnv, password: passwordEnv });
 
-
-// A sample function to demostrate how to run a query and get its result. 
+// A sample function to demostrate how to run a query and get its result.
 // This endpoint leverages server-sent events so it requires some special handling.
 async function runQuery() {
-  console.log('running query to fetch result...')
+  console.log('running query to fetch result...');
 
   const builder = new QueryBuilder();
   builder
@@ -24,31 +20,35 @@ async function runQuery() {
       console.log('received rows', rows);
     })
     .withOnError((error) => {
-      console.error('on error', error)
+      console.error('on error', error);
     })
     .withOnMetrics((metrics) => {
-      console.debug('received metrics', metrics)
-    })
+      console.debug('received metrics', metrics);
+    });
 
   const query = await builder.start();
 
   if (!(query instanceof Query)) {
-    console.error("oops", query);
-    return
+    console.error('oops', query);
+    return;
   }
 
-  console.log(`query ${query.id} is ${query.status} since ${new Date(query.startTime * 1000)}`);
+  console.log(
+    `query ${query.id} is ${query.status} since ${new Date(
+      query.startTime * 1000
+    )}`
+  );
 
-  console.table(query.header)
+  console.table(query.header);
 
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   query.close();
 }
 
 // A sample function to demotrate how to create a stream
 async function createStream() {
-  console.log('creating stream...')
+  console.log('creating stream...');
   const url = Env().BuildUrl('v1beta2', 'streams');
 
   const createStreamBody = {
@@ -62,29 +62,31 @@ async function createStream() {
       {
         name: 'category',
         type: 'string',
-      }, {
+      },
+      {
         name: 'value',
-        type: 'int64'
-      }, {
+        type: 'int64',
+      },
+      {
         name: 'uuid',
         type: 'string',
-      }
-    ]
-  }
+      },
+    ],
+  };
 
   // fetch api in nodejs is experimental
   // @ts-ignore
   await fetch(url, {
     method: 'POST',
     headers: Env().AuthHeader(),
-    body: JSON.stringify(createStreamBody)
+    body: JSON.stringify(createStreamBody),
   })
     // @ts-ignore
     .then((response) => {
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      return response.json()
+      return response.json();
     })
     // @ts-ignore
     .then((body) => {
@@ -94,30 +96,34 @@ async function createStream() {
 
 // A sample function to demotrate how to ingest some sample events to the stream
 async function ingestEvents() {
-  console.log('ingesting sample events...')
-  const url = [Env().BuildUrl('v1beta2', 'streams'), 'test_stream', 'ingest'].join('/');
+  console.log('ingesting sample events...');
+  const url = [
+    Env().BuildUrl('v1beta2', 'streams'),
+    'test_stream',
+    'ingest',
+  ].join('/');
 
   const ingestBody = {
-    columns: [
-      "category",
-      "value",
-      "uuid"
-    ],
+    columns: ['category', 'value', 'uuid'],
     data: [
       ['cat_1', 10, 'd0dab3a0-c1c3-4997-bf79-5c363835de43'],
       ['cat_2', 20, '2dd8823d-2d7b-4fc4-940c-70d6f29619c0'],
       ['cat_3', 30, 'b204922d-139b-4189-8f5d-95d82714114e'],
-      ['cat_1', 11, 'ebd9f9ab-4df4-4269-81af-262303c4b375']
-    ]
-  }
+      ['cat_1', 11, 'ebd9f9ab-4df4-4269-81af-262303c4b375'],
+    ],
+  };
 
   // @ts-ignore
   await fetch(url, {
     method: 'POST',
-    headers: Object.assign({}, {
+    headers: Object.assign(
+      {},
+      {
         'Content-Type': 'application/json;charset=UTF-8',
-      }, Env().AuthHeader()),
-    body: JSON.stringify(ingestBody)
+      },
+      Env().AuthHeader()
+    ),
+    body: JSON.stringify(ingestBody),
   })
     // @ts-ignore
     .then(async (response) => {
@@ -125,17 +131,17 @@ async function ingestEvents() {
         const body = await response.text();
         throw new Error(`HTTP error! Status: ${response.status} ${body}`);
       }
-    })
+    });
 
-  await new Promise(resolve => setTimeout(resolve, 5000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 }
 
 async function main() {
-  await createStream()
+  await createStream();
 
-  await ingestEvents()
+  await ingestEvents();
 
-  await runQuery()
+  await runQuery();
 }
 
-main()
+main();
